@@ -57,10 +57,24 @@ matplotlib
 seaborn
 
 Implementation Steps
-1. TF-IDF + Neural Network
+# 1. TF-IDF + K Means + Neural Network
 # Convert symptoms to TF-IDF features
 vectorizer = TfidfVectorizer(max_features=2000, stop_words='english')
 X = vectorizer.fit_transform(final2_df['all_symptoms']).toarray()
+
+# K-Means Clustering
+from sklearn.cluster import KMeans
+kmeans = KMeans(n_clusters=5, random_state=42)
+labels = kmeans.fit_predict(X_tfidf)
+
+Output:
+
+<img width="775" height="547" alt="image" src="https://github.com/user-attachments/assets/b44df7fe-a052-4f03-8dcf-3c3642e9884d" />
+
+5 distinct clusters visualized using t-SNE/UMAP
+
+Similar symptom sets grouped together
+
 
 # Train neural network model
 model_tfidf.fit(X_train, y_train, epochs=20, batch_size=32)
@@ -102,7 +116,7 @@ Confusion Metrics
 
 
 
-2. Word2Vec / SpaCy Embeddings + Deep Neural Network
+# 2. Word2Vec / SpaCy Embeddings + Deep Neural Network
 # Convert each symptom set into dense vectors
 X_spacy = np.array([nlp(text).vector for text in final2_df['all_symptoms']])
 
@@ -130,26 +144,38 @@ Confusion Matrix
 <img width="640" height="85" alt="image" src="https://github.com/user-attachments/assets/62b99ee2-07a5-400d-99f3-30a0a200265e" />
 
 
-3️⃣ K-Means Clustering
-from sklearn.cluster import KMeans
-kmeans = KMeans(n_clusters=5, random_state=42)
-labels = kmeans.fit_predict(X_tfidf)
-
-📈 Output:
-
-<img width="775" height="547" alt="image" src="https://github.com/user-attachments/assets/b44df7fe-a052-4f03-8dcf-3c3642e9884d" />
-
-
-5 distinct clusters visualized using t-SNE/UMAP
-
-Similar symptom sets grouped together
-
-4. Compare Accuracy of TF-IDF Vs Word2vec Emebedding
+# 3. Compare Accuracy of TF-IDF Vs Word2vec Emebedding
    
    <img width="381" height="75" alt="image" src="https://github.com/user-attachments/assets/04425e2d-1f00-4025-a835-9a3d1dea1aa2" />
+
+from sklearn.metrics import confusion_matrix, classification_report
+
+<img width="1012" height="839" alt="image" src="https://github.com/user-attachments/assets/0a03953b-ec78-438f-95cf-61f1d075ae44" />
+
+
+
+y_pred = model.predict(X_test)
+cm = confusion_matrix(y_test.argmax(axis=1), y_pred.argmax(axis=1))
+print(classification_report(y_test.argmax(axis=1), y_pred.argmax(axis=1)))
+
+
+Output:
+
+<img width="1302" height="1106" alt="image" src="https://github.com/user-attachments/assets/a71334e7-37e3-4cfa-af6a-d3e23592ccad" />
+
+
+Accuracy: 0.94
+
+Precision: 0.93
+
+Recall: 0.95
+
+F1-score: 0.94
+
+Confusion matrix visualized for overall model performance.
  
 
-4️⃣ Explainability (LIME + SHAP)
+# 4. Explainability (LIME + SHAP)
 # LIME Explanation
 exp = explainer.explain_instance(text_instance, model.predict_proba)
 exp.show_in_notebook()
@@ -170,7 +196,7 @@ shap_values = explainer(sample_data)
 shap.plots.bar(shap_values[0])
 
 
-📊 Output:
+Output:
 
 <img width="789" height="940" alt="image" src="https://github.com/user-attachments/assets/65df489d-7687-4530-a22b-b4687d8dfab3" />
 
@@ -179,33 +205,11 @@ SHAP bar plot ranking features by contribution
 <img width="790" height="1113" alt="image" src="https://github.com/user-attachments/assets/41f5d415-e959-4d49-93d2-fc2688b1bda2" />
 
 
-5️. Model Evaluation
-from sklearn.metrics import confusion_matrix, classification_report
+# 6. Model Evaluation
 
-<img width="1012" height="839" alt="image" src="https://github.com/user-attachments/assets/0a03953b-ec78-438f-95cf-61f1d075ae44" />
-
-
-
-y_pred = model.predict(X_test)
-cm = confusion_matrix(y_test.argmax(axis=1), y_pred.argmax(axis=1))
-print(classification_report(y_test.argmax(axis=1), y_pred.argmax(axis=1)))
-
-
-Output:
-
-<img width="1302" height="1106" alt="image" src="https://github.com/user-attachments/assets/a71334e7-37e3-4cfa-af6a-d3e23592ccad" />
-
-
-Accuracy: 0.94
-Precision: 0.93
-Recall: 0.95
-F1-score: 0.94
-
-
-Confusion matrix visualized for overall model performance.
 
 	
-🧾 Results Summary
+Results Summary
 Model Type	Feature Representation	Accuracy	
 
 Neural Network + TF-IDF	Sparse BoW features	~92%	Fast baseline
