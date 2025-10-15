@@ -85,6 +85,7 @@ Loss Curve: Converges smoothly after ~10–15 epochs.
 <img width="716" height="581" alt="image" src="https://github.com/user-attachments/assets/6c35f8cb-d0a0-4567-987d-0c321709d214" />
 
 Classification Metrics
+
 Metric	Value
 
 Precision	0.91
@@ -96,6 +97,8 @@ F1-Score	0.91
 Confusion Metrics
 
 <img width="767" height="541" alt="image" src="https://github.com/user-attachments/assets/52a65779-afb6-4245-88c5-642fce814436" />
+
+
 
 
 
