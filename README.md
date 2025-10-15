@@ -66,7 +66,8 @@ X = vectorizer.fit_transform(final2_df['all_symptoms']).toarray()
 model_tfidf.fit(X_train, y_train, epochs=20, batch_size=32)
 
 
-📊 Output:
+Output:
+
 <img width="691" height="539" alt="image" src="https://github.com/user-attachments/assets/f56486d1-bbce-47f7-aed3-ed8c9a13359a" />
 
 
@@ -76,9 +77,11 @@ Test Accuracy: ~0.92
 Visual Outputs
 
 Accuracy Curve: Shows steady improvement, no overfitting.
+
 <img width="725" height="571" alt="image" src="https://github.com/user-attachments/assets/25f751e2-f00b-4c9a-9d19-05de75b213ba" />
 
 Loss Curve: Converges smoothly after ~10–15 epochs.
+
 <img width="716" height="581" alt="image" src="https://github.com/user-attachments/assets/6c35f8cb-d0a0-4567-987d-0c321709d214" />
 
 Classification Metrics
@@ -88,6 +91,7 @@ Recall	0.90
 F1-Score	0.91
 
 Confusion Metrics
+
 <img width="767" height="541" alt="image" src="https://github.com/user-attachments/assets/52a65779-afb6-4245-88c5-642fce814436" />
 
 
@@ -101,6 +105,7 @@ model_embed.fit(X_train_embed, y_train_embed, epochs=20)
 
 
 Output:
+
 <img width="588" height="107" alt="image" src="https://github.com/user-attachments/assets/f101ee8b-0e30-44c1-a666-57594204d7f8" />
 <img width="606" height="86" alt="image" src="https://github.com/user-attachments/assets/44b75c24-b0cb-493b-96a2-9c91a6673ad6" />
 
@@ -114,6 +119,7 @@ Predicted Disease: 'Pneumonia' and 'Brain Hemorrhage'
 <img width="726" height="574" alt="image" src="https://github.com/user-attachments/assets/66c6e187-ce57-4ff8-a826-68bafa4a59bf" />
 
 Confusion Matrix 
+
 <img width="758" height="532" alt="image" src="https://github.com/user-attachments/assets/f678daea-ee80-4eca-bbe5-c55f499e07a9" />
 <img width="640" height="85" alt="image" src="https://github.com/user-attachments/assets/62b99ee2-07a5-400d-99f3-30a0a200265e" />
 
@@ -133,6 +139,7 @@ labels = kmeans.fit_predict(X_tfidf)
 Similar symptom sets grouped together
 
 4. Compare Accuracy of TF-IDF Vs Word2vec Emebedding
+   
    <img width="381" height="75" alt="image" src="https://github.com/user-attachments/assets/04425e2d-1f00-4025-a835-9a3d1dea1aa2" />
  
 
@@ -140,11 +147,15 @@ Similar symptom sets grouped together
 # LIME Explanation
 exp = explainer.explain_instance(text_instance, model.predict_proba)
 exp.show_in_notebook()
+
 <img width="920" height="77" alt="image" src="https://github.com/user-attachments/assets/fde8eba4-dbf0-4cbe-af11-6f95aa1a457f" />
+
 LIME chart showing which symptoms most influenced prediction
+
 <img width="1779" height="119" alt="image" src="https://github.com/user-attachments/assets/9a2a44f9-90be-4a5d-adb2-5fbbefa5a961" />
 
 Prediction Confidence 
+
 <img width="460" height="103" alt="image" src="https://github.com/user-attachments/assets/8c9528a7-67b0-4a28-84c9-071ed59d89f0" />
 
 
@@ -158,11 +169,13 @@ shap.plots.bar(shap_values[0])
 <img width="789" height="940" alt="image" src="https://github.com/user-attachments/assets/65df489d-7687-4530-a22b-b4687d8dfab3" />
 
 SHAP bar plot ranking features by contribution
+
 <img width="790" height="1113" alt="image" src="https://github.com/user-attachments/assets/41f5d415-e959-4d49-93d2-fc2688b1bda2" />
 
 
 5️. Model Evaluation
 from sklearn.metrics import confusion_matrix, classification_report
+
 <img width="1012" height="839" alt="image" src="https://github.com/user-attachments/assets/0a03953b-ec78-438f-95cf-61f1d075ae44" />
 
 
@@ -187,10 +200,14 @@ Confusion matrix visualized for overall model performance.
 
 	
 🧾 Results Summary
-Model Type	Feature Representation	Accuracy	Notes
+Model Type	Feature Representation	Accuracy	
+
 Neural Network + TF-IDF	Sparse BoW features	~92%	Fast baseline
+
 Neural Network + Word2Vec/SpaCy	Dense semantic embeddings	~95%	Captures context
+
 K-Means (TF-IDF)	Clustering of symptoms	—	For unsupervised grouping
+
 LIME + SHAP	—	—	Explainability layer
 
 Key Insights
