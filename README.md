@@ -86,8 +86,11 @@ Loss Curve: Converges smoothly after ~10–15 epochs.
 
 Classification Metrics
 Metric	Value
+
 Precision	0.91
+
 Recall	0.90
+
 F1-Score	0.91
 
 Confusion Metrics
