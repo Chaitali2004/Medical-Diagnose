@@ -1,22 +1,5 @@
 #### “Attention-Enhanced Symptom Embedding Fusion (AESEF) ############
 
-# %%
-import gensim.downloader as api
-
-# Load small pretrained word2vec embeddings
-w2v = api.load("glove-wiki-gigaword-50")  # small 50d embeddings
-
-def embed_symptoms(symptom_list):
-    vecs = []
-    for s in symptom_list:
-        for word in s.lower().split():
-            if word in w2v:
-                vecs.append(w2v[word])
-    if vecs:
-        return np.mean(vecs, axis=0)
-    else:
-        return np.zeros(w2v.vector_size)
-
 
 # %%
 # ==============================
@@ -280,129 +263,6 @@ print(classification_report(y_test, y_pred))
 # 🧠 Concept:
 # 
 # Attention assigns each symptom a weight (importance score) based on how much it contributes to the final prediction.
-
-# %%
-# ==============================
-# Full Disease Prediction Pipeline
-# ==============================
-import pandas as pd
-import numpy as np
-from sklearn.preprocessing import MultiLabelBinarizer
-from sklearn.model_selection import train_test_split
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import classification_report, accuracy_score
-from sklearn.metrics.pairwise import cosine_similarity
-import gensim.downloader as api
-
-# ------------------------------
-# 1️⃣ Load your dataset
-# ------------------------------
-DATA_PATH = r"C:\Users\CHAITALI JAIN\Desktop\database for eds\DiseaseAndSymptoms.csv"
-df = pd.read_csv(DATA_PATH)
-print("Raw shape:", df.shape)
-
-# ------------------------------
-# 2️⃣ Prepare symptom columns
-# ------------------------------
-# Define symptom columns
-symptom_cols = [f'Symptom_{i}' for i in range(1, 18)]
-
-# Ensure all symptom columns exist and fill missing
-for col in symptom_cols:
-    if col not in df.columns:
-        df[col] = 'none'
-    df[col] = df[col].fillna('none').astype(str)
-
-# ------------------------------
-# 3️⃣ Create symptom lists per row
-# ------------------------------
-symptom_lists = df[symptom_cols].apply(lambda x: [str(s).strip() for s in x if s != 'none'], axis=1)
-
-# ------------------------------
-# 4️⃣ Load pre-trained embeddings
-# ------------------------------
-w2v = api.load("glove-wiki-gigaword-50")  # 50d embeddings
-
-def embed_symptoms(symptom_list):
-    """Average word embeddings for all words in a symptom list"""
-    vecs = []
-    for s in symptom_list:
-        for word in s.lower().split():
-            if word in w2v:
-                vecs.append(w2v[word])
-    if vecs:
-        return np.mean(vecs, axis=0)
-    else:
-        return np.zeros(w2v.vector_size)
-
-# ------------------------------
-# 5️⃣ Similarity-weighted embeddings
-# ------------------------------
-# All unique symptoms for similarity weighting
-all_symptom_list = list(set([s.lower() for col in symptom_cols for s in df[col].dropna() if s != 'none']))
-all_symptom_vecs = [embed_symptoms([s]) for s in all_symptom_list]
-
-def weighted_symptom_vector(symptoms):
-    vec = embed_symptoms(symptoms)
-    if len(vec) == 0:
-        return np.zeros(w2v.vector_size)
-    sims = cosine_similarity([vec], all_symptom_vecs)[0]
-    weighted_vec = vec * (1 + sims.mean())  # boost if similar symptoms exist
-    return weighted_vec
-
-# Generate feature matrices
-X_embeddings = np.array([weighted_symptom_vector(s) for s in symptom_lists])
-X_structured = MultiLabelBinarizer().fit_transform(symptom_lists)
-X_combined = np.hstack((X_embeddings, X_structured))
-import numpy as np
-from sklearn.preprocessing import MultiLabelBinarizer
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import accuracy_score, classification_report
-import gensim.downloader as api
-
-# Load GloVe embeddings
-w2v = api.load("glove-wiki-gigaword-50")
-
-def embed_symptom(s):
-    vecs = [w2v[w] for w in s.lower().split() if w in w2v]
-    return np.mean(vecs, axis=0) if vecs else np.zeros(w2v.vector_size)
-
-# Attention mechanism
-def attention_weighted_embedding(symptom_list):
-    vecs = np.array([embed_symptom(s) for s in symptom_list])
-    if len(vecs) == 0:
-        return np.zeros(w2v.vector_size)
-    
-    # Compute attention scores
-    scores = np.dot(vecs, vecs.mean(axis=0))  # similarity to mean context
-    attn = np.exp(scores) / np.sum(np.exp(scores))  # softmax normalization
-    
-    # Weighted sum of vectors
-    weighted_vec = np.sum(vecs * attn[:, np.newaxis], axis=0)
-    return weighted_vec
-
-# Example usage on your dataset
-symptom_cols = [f'Symptom_{i}' for i in range(1, 18)]
-df[symptom_cols] = df[symptom_cols].fillna('none').astype(str)
-symptom_lists = df[symptom_cols].apply(lambda x: [s for s in x if s != 'none'], axis=1)
-
-X_embeddings = np.array([attention_weighted_embedding(s) for s in symptom_lists])
-mlb = MultiLabelBinarizer()
-X_structured = mlb.fit_transform(symptom_lists)
-X_combined = np.hstack((X_embeddings, X_structured))
-
-# Train-test split and model
-y = df['Disease']
-from sklearn.model_selection import train_test_split
-X_train, X_test, y_train, y_test = train_test_split(X_combined, y, test_size=0.2, random_state=42, stratify=y)
-
-model = RandomForestClassifier(n_estimators=200, random_state=42)
-model.fit(X_train, y_train)
-y_pred = model.predict(X_test)
-
-print("Accuracy:", accuracy_score(y_test, y_pred))
-print(classification_report(y_test, y_pred))
-
 
 # %%
 # ==============================
@@ -750,6 +610,8 @@ print("\nExample attention visualization for original row index:", orig_idx)
 plot_attention_for_index(orig_idx, top_k=10)
 
 # -------------------- End --------------------
+
+
 
 
 # %%
