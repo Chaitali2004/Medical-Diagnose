@@ -122,7 +122,7 @@ print(classification_report(y_test, y_pred))
 acc = accuracy_score(y_test, y_pred)
 print(f"Overall Accuracy: {acc:.4f}")
 
-
+#-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 # %%
 # ==============================
 # Full Disease Prediction Pipeline
@@ -351,9 +351,8 @@ y_pred = model.predict(X_test)
 print("Accuracy:", accuracy_score(y_test, y_pred))
 print(classification_report(y_test, y_pred))
 
-
+#-------------------------------------------------------------------------------------------------------------------------------------------------------
 # %% [markdown]
-# Here are optional enhancements that would make it publishable-level unique:
 # 
 # Add Symptom Severity weighting:
 # 
